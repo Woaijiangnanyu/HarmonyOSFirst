@@ -1,0 +1,81 @@
+{
+  "files":   //用于表示配置适用的文件范围的 glob 模式数组。在没有指定的情况下，应用默认配置
+  [
+    "**/*.js", //字符串类型
+    "**/*.ts",
+    "**/*.ets"
+  ],
+  "ignore":  //一个表示配置对象不应适用的文件的 glob 模式数组。如果没有指定，配置对象将适用于所有由 files 匹配的文件
+  [
+    "build/**/*",    //字符串类型
+    "node_modules/**/*",
+    "**/src/ohosTest/**/*",
+    "**/src/test/**/*",
+    "**/src/mock/**/*",
+    "**/node_modules/**/*",
+    "**/oh_modules/**/*",
+    "**/build/**/*",
+    "**/.preview/**/*"
+  ],
+  "ruleSet":       //设置检查待应用的规则集
+  [
+    "plugin:@typescript-eslint/recommended",    //快捷批量引入的规则集, 枚举类型：plugin:@typescript-eslint/all, plugin:@typescript-eslint/recommended, plugin:@cross-device-app-dev/all, plugin:@cross-device-app-dev/recommended等
+    "plugin:@performance/recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": { //可以对ruleSet配置的规则集中特定的某些规则进行修改、去使能, 或者新增规则集以外的规则；ruleSet和rules共同确定了代码检查所应用的规则
+  "@typescript-eslint/no-restricted-syntax": [
+    // 告警级别: 枚举类型, 支持配置为error, warn, off
+    "error",
+    {
+      // selector属性必选，配置要禁用的语法
+      // 可通过特定DSL筛选待限制的语句，CallExpression表示方法调用表达式，后面的中括号里面是筛选条件（根据语法树Node节点来确定）
+      // 其中callee.object.name根据指定的名称筛选调用方法的对象（class，namespace或module），以上示例中为"Foo"
+      // callee.property.name则根据指定的名称筛选被调用的方法，以上示例中为"bar"
+      "selector": "CallExpression[callee.object.name='Foo'][callee.property.name='bar']",
+      // message属性可选，配置要展示的报错信息
+      "message": "Foo.bar() is not allowed"
+    }
+  ],
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        // selector属性必选，配置要检查的语法，这里配置的class表示检查自定义组件名
+        "selector": "class",
+        // format属性必选，配置期望的命名风格，支持枚举值，这里配置的PascalCase表示大驼峰风格
+        "format": ["PascalCase"],
+        // custom属性可选，配置用户自定义的命名风格
+        "custom": {
+          // regex属性必选，配置具体的正则
+          "regex": "^[a-zA-Z]+$",
+          // match属性必选，配置为true表示正则未命中时报错；配置为false表示正则命中时报错
+          "match": true
+        }
+      }
+    ]
+},
+  "overrides":      //针对特定的目录或文件采用定制化的规则配置
+  [
+    {
+      "files":   //指定需要定制化配置规则的文件或目录
+      [
+        "entry/**/*.ts"   //字符串类型
+      ],
+      "excluded":
+      [
+        "entry/**/*.test.js" //指定需要排除的目录或文件, 被排除的目录或文件不会按照定制化的规则配置被检查; 字符串类型
+      ],
+      "rules":   //支持对overrides外公共配置的规则进行修改、去使能, 或者新增公共配置以外的规则; 该配置将覆盖公共配置
+      {
+        "@typescript-eslint/explicit-function-return-type":  // ruleId: 枚举类型
+        [
+          "warn",     //告警级别: 枚举类型, 支持配置为error, warn, off; 覆盖公共配置, explicit-function-return-type告警级别为warn
+          {
+            allowExpressions: true    //规则特定的开关配置, 为可选项, 不同规则其下层的配置项不同
+          }
+        ],
+        "@typescript-eslint/no-unsafe-return": "off"   // 覆盖公共配置, 不检查no-unsafe-return规则
+      }
+    }
+  ]
+}
